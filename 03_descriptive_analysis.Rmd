@@ -1,0 +1,264 @@
+---
+title: Descriptive Analysis
+author: Gary Weissman
+date: September 24, 2021
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libs}
+library(data.table)
+library(ggplot2)
+library(lubridate)
+library(skimr)
+library(ggsci)
+```
+
+
+```{r load}
+dt <- fread('fda_approved_devices.csv')
+# Clean up year format issue
+dt[, dofd_clean := gsub('/19$', '/2019', dt$`Date of Final Decision`)]
+dt[, fin_decis_date := as.Date(dofd_clean, format = '%m/%d/%Y')]
+dt[, fin_decis_moyr := floor_date(fin_decis_date, unit = 'month')]
+```
+
+```{r desc}
+skim(dt)
+```
+
+
+```{r viz}
+# Trends in final decision dates
+dt[, .N, by = fin_decis_moyr] |>
+  ggplot(aes(fin_decis_moyr, N)) +
+  geom_bar(stat = 'identity') +
+  theme_bw() +
+  ggtitle('Final approval decisions each month')
+
+# Cumulative decisions by month
+dt[, .N, by = fin_decis_moyr][order(fin_decis_moyr)][, cum_decis := cumsum(N)] |>
+  ggplot(aes(fin_decis_moyr, cum_decis)) +
+  geom_line() +
+  geom_point() +
+  theme_bw() +
+  scale_x_date('Year-Month') +
+  scale_y_continuous('Count') +
+  ggtitle('Cumulative approval decisions by month')
+
+# Decisions by category
+dt[, .N, by = `Panel (Lead)`] |>
+  ggplot(aes(reorder(`Panel (Lead)`, N), N)) +
+  geom_bar(stat = 'identity', color = 'blue', fill = NA) +
+  geom_text(aes(label = N, y = N + 6), color = 'black') +
+  theme_bw() +
+  scale_x_discrete('Panel name') +
+  ggtitle('Approvals by panel') +
+  coord_flip()
+
+# Decisions by company (only the top 20)
+dt[, .N, by = Company][order(-N)][1:20] |>
+  ggplot(aes(reorder(Company, N), N)) +
+  geom_bar(stat = 'identity', color = 'blue', fill = NA) +
+  geom_text(aes(label = N, y = N + 2), color = 'black') +
+  theme_bw() +
+  scale_x_discrete('Company') +
+  ggtitle('Company') +
+  coord_flip()
+
+```
+
+## Hospital based
+
+Consider the subgroup of devices related to hospital-based, critical care focused, bedside clinical care for adults.
+
+```{r hospdev}
+cc_panels <- c('Cardiovascular', 'Anesthesiology', 'General Hospital')
+dt[`Panel (Lead)` %in% cc_panels]
+print(paste0(nrow(dt[`Panel (Lead)` %in% cc_panels]), ' potential devices identified in these critical care categories.'))
+
+# Look at above visualizations in this subset.
+# Trends in final decision dates
+dt[`Panel (Lead)` %in% cc_panels][, .N, by = fin_decis_moyr] |>
+  ggplot(aes(fin_decis_moyr, N)) +
+  geom_bar(stat = 'identity') +
+  theme_bw() +
+  ggtitle('Final approval decisions each month')
+
+# Cumulative decisions by month
+dt[`Panel (Lead)` %in% cc_panels][, .N, by = fin_decis_moyr][order(fin_decis_moyr)][, cum_decis := cumsum(N)] |>
+  ggplot(aes(fin_decis_moyr, cum_decis)) +
+  geom_line() +
+  geom_point() +
+  theme_bw() +
+  scale_x_date('Year-Month') +
+  scale_y_continuous('Count') +
+  ggtitle('Cumulative approval decisions by month')
+
+# Decisions by category
+dt[`Panel (Lead)` %in% cc_panels][, .N, by = `Panel (Lead)`] |>
+  ggplot(aes(reorder(`Panel (Lead)`, N), N)) +
+  geom_bar(stat = 'identity', color = 'blue', fill = NA) +
+  geom_text(aes(label = N, y = N + 6), color = 'black') +
+  theme_bw() +
+  scale_x_discrete('Panel name') +
+  ggtitle('Approvals by panel') +
+  coord_flip()
+
+# Decisions by company (only the top 20)
+dt[`Panel (Lead)` %in% cc_panels][, .N, by = Company][order(-N)][1:20] |>
+  ggplot(aes(reorder(Company, N), N)) +
+  geom_bar(stat = 'identity', color = 'blue', fill = NA) +
+  geom_text(aes(label = N, y = N + 2), color = 'black') +
+  theme_bw() +
+  scale_x_discrete('Company') +
+  ggtitle('Company') +
+  coord_flip()
+
+# Number of unique products by Panel category
+unique(dt[`Panel (Lead)` %in% cc_panels, .(`Primary Product Code`,
+                                    `Panel (Lead)`)])[,
+                                                     .N, by = .(`Panel (Lead)`)] |>
+  ggplot(aes(reorder(`Panel (Lead)`, N), N)) +
+  geom_bar(stat = 'identity', color = 'blue', fill = NA) +
+  geom_text(aes(label = N, y = N + 1), color = 'black') +
+  theme_bw() +
+  scale_x_discrete('Panel name') +
+  ggtitle('Approved unique devices by panel') +
+  coord_flip()
+```
+
+## Now a manual review
+
+Manually review the descriptions of these unique devices to see if they might qualify as relevant to bedside clinical decision support systems.
+
+```{r manualreview}
+#dput(unique(dt[`Panel (Lead)` %in% cc_panels, .(`Submission Number`)]))
+# Here manually review each submission and indicate if it is eligible for inclusion if it relates to bedside, inpatient care in a critical care or adjacent space
+# Ok this should have been done in a csv file or some database but here we are...
+man_rev_list <- list(c("K210484", "No"), # implantable ECG device
+                       c("DEN200038", "No"), # vital sign monitoring only
+                       c("DEN200019", "No"), # optical vital sign monitoring
+                       c("DEN200022", "Yes"), # provides CDS for hemodynamic monitoring
+                       c("K200717", "Yes"), # ICU CDS system
+                       c("K193631", "No"), # Electronic stethoscope
+                       c("K201298", "No"), # atrial mapping during EP procedures
+                       c("K200833", "No"), # outpatient cardiac rhythm monitor and alert system
+                       c("K192732", "No"), # outpatient cardiac rhythm monitor and alert system
+                       c("K200036", "Yes"), # inpatient real time ECG analysis and interpretation
+                       c("K192004", "No"), # arrhythmia and heart sound/murmur analysis and detection
+                       c("K183089", "No"), # hand-held spirometer
+                       c("K192442", "No"), # FFR calculation from coronary angiography images
+                       c("K190013", "No"), # Diabetes self-management system
+                       c("K183370", "Yes"), # Pera - interface to Rothman Index for RRTs, etc
+                       c("K183282", "No"), # Home monitoring of vital signs
+                       c("K190925", "No"), # FFR calculation and analysis from coronary CT images
+                       c("K183322", "No"), # ambulatory ECG and vitals monitoring
+                       c("K183646", "Yes"), # Hypotension prediction from arterial waveforms
+                       c("K181988", "No"), # electronic stethoscope heart sound analyzer
+                       c("K181352", "No"), # home vital sign monitoring
+                       c("K181823", "No"), # Ambulatory ECG analysis
+                       c("K182344", "No"), # ECG analysis and interpretation
+                       c("K183704", "No"), # Ambulatory ECG analysis
+                       c("K181916", "No"), # Insulin self-management for pt with DM-II
+                       c("K182456", "No"), # Watch to record single-lead ECG for outpatients
+                       c("K182149", "No"), # FFR calculations from angiography images
+                       c("K182790", "No"), # non acute ECG and other vitals monitoring
+                       c("K180432", "Yes"), # AI-ECG is automated ECG analysis and intepretation
+                       c("K173872", "No"), # Patient self-testing for atrial fibrillation
+                       c("K181502", "No"), # Long-term ECG monitoring and event detection
+                       c("K172959", "Yes"), # Pera health - Rothman Index interface
+                       c("DEN160044", "Yes"), # Hypotension prediction monitor in OR from arterial waveform
+                       c("K171056", "Yes"), # Real time EHR and waveform reviews for CDS
+                       c("K172507", "No"), # Home monitoring of fluid status for HF patients
+                       c("K163694", "No"), # general home monitoring of ECG
+                       c("K171936", "No"), # outpatient long term ECG monitoring
+                       c("K163339", "No"), # Microcirculation inspection device
+                       c("K170568", "No"), # Non acute care ECG interpretation
+                       c("K163665", "No"), # abdominal movement sensor to identify sleep disordered breathing; sleep but not CC
+                       c("K162855", "No"), # subcutaneous implantable ECG recorder/Analysis
+                       c("K160401", "No"), # cloud transmission of heart sounds via electronic stethoscope
+                       c("K160016", "No"), # electronic stethoscope tool
+                       c("K150102", "No"), # snoring detector
+                       c("K142512", "No"), # Vital sign monitoring for ambulatory patients
+                       c("K142918", "No"), # Subcutaneous insulin dose calculator
+                       c("K081140", "Yes"), # vital sign monitoring and alarm suitable for inpatients
+                       c("K955841", "No")) # Sleep study monitoring device
+
+man_rev_dt <- data.table (submission_number = sapply(man_rev_list, `[[`, 1),
+                          eligible = sapply(man_rev_list, `[[`, 2))
+print(paste0('After manual review there are ', sum(man_rev_dt$eligible == 'Yes'), ' approvals related to devices that could be used for acute care clinical decision support.'))
+```
+
+Now for each eligible device, record:
+
+1. The level of evidence in the cited papers for their use (e.g. pre-post study, retrospective cohort study, use of quasi-experimental methods for causal inference, RCT, etc).
+2. Whether or not the study was peer reviewed (vs pre-print)
+3. Whether or not the code for the underlying algorithms are made publicly available.
+4. Is there explicit assessment of effectiveness, safety (i.e harms), and equity?
+5. Other features of the model related to transparency (inputs, labels, population, etc)?
+
+```{r generatecsvtoreview}
+to_review_dt <- merge(man_rev_dt, dt,
+                      by.x = 'submission_number', by.y = "Submission Number")
+
+to_review_dt <- to_review_dt[eligible == 'Yes', .(submission_number, company = Company,
+                                                  device = Device, panel = `Panel (Lead)`,
+                                                  primary_product_code = `Primary Product Code`,
+                                                  final_decision_dt = fin_decis_date,
+                                                  study_design = '',
+                                                  peer_reviewed = '',
+                                                  sample_size = '',
+                                                  number_of_sites = '',
+                                                  code_availability = '',
+                                                  safety_assessment = '',
+                                                  equity_assessment = '',
+                                                  other_notes = '')]
+
+# NB. Be sure to change the name of this file once you start entering data so that you don't actually write over everything!
+fwrite(to_review_dt, 'manual_review_template_empty_version.csv')
+```
+
+## Make exhibits for manuscript
+
+```{r fig1}
+
+fig1_dt <- merge(man_rev_dt, dt,
+                      by.x = 'submission_number', by.y = "Submission Number",
+                 all = TRUE)
+# Identify select panels of interest
+select_panels <- c('Radiology', 'Cardiovascular', 'Anesthesiology', 
+                   'General Hospital', 'General and Plastic Surgery')
+
+# and get data just for the CC CDS approvals in this study
+fig1_cccds_dt <- fig1_dt[eligible == 'Yes', .N, by = .(panel = `Panel (Lead)`, fin_decis_moyr)][order(panel, fin_decis_moyr)][, cum_decis := cumsum(N), by = panel]
+
+
+fig1_dt[, .N, by = .(panel = `Panel (Lead)`, fin_decis_moyr)][order(panel, fin_decis_moyr)][, cum_decis := cumsum(N), by = panel][panel %in% select_panels] |>
+  ggplot(aes(fin_decis_moyr, cum_decis, color = panel)) +
+  geom_line() +
+  geom_point(size = 0.5) +
+  theme_classic() +
+  geom_point(data = fig1_cccds_dt, color = 'black', size = 0.5) +
+  geom_line(data = fig1_cccds_dt, color = 'black', linetype = 'twodash') +
+  scale_x_date('Date') +
+  scale_y_continuous('Count') +
+  annotate('text', as.Date('2006-01-01'), 100, 
+           label = 'Critical care \nclinical decision support') +
+  annotate("segment", x = as.Date('2003-01-15'), 
+           xend = as.Date('2008-12-31'), 
+           y = 80, 
+           yend = 80,
+           colour = "black",
+           linetype = 'twodash') + 
+  annotate('point', x = as.Date('2006-01-01'), y = 80, color = 'black') + 
+  #ggtitle('Cumulative FDA approvals for devices using AI or ML technology') +
+  scale_color_nejm(name = 'FDA review panel') +
+  theme(legend.position = 'bottom')
+
+ggsave('fig1_temporal_trends.png')
+
+```
