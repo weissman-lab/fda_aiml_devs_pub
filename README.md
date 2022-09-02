@@ -9,7 +9,7 @@ Jessica T. Lee. Alexander T. Moffett, Genevieve P. Kanter, Gary E. Weissman. Ana
 ```
 @article{lee_devices_2021,
 title = {Analysis of a public database of predictive devices approved by the FDA for bedside clinical decision support in critical care},
-author = {Lee, Jessica T. and Moffett, Alexander T. and Kanter, Genevieve P and Weissman, Gary E.},
+author = {Lee, Jessica T. and Moffett, Alexander T. and Kanter, Genevieve P. and Weissman, Gary E.},
 journal = {Under review},
 year = {2021}
 }
