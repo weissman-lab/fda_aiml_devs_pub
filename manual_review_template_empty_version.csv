@@ -1,0 +1,11 @@
+submission_number,company,device,panel,primary_product_code,final_decision_dt,study_design,peer_reviewed,sample_size,number_of_sites,code_availability,safety_assessment,equity_assessment,other_notes
+DEN160044,Edwards Lifesciences LLC,Acumen Hypotension Prediction Index (HPI) Feature Software,Cardiovascular,QAQ,2018-03-16,"","","","","","","",""
+DEN200022,Fifth Eye Inc.,Analytic for Hemodynamic Instability (AHI),Cardiovascular,QNV,2021-03-01,"","","","","","","",""
+K081140,OBS Medical,Visensia,Cardiovascular,MHX,2008-07-17,"","","","","","","",""
+K171056,"Excel Medical Electronics, LLC",WAVE Clinical Platform,Cardiovascular,MWI,2018-01-04,"","","","","","","",""
+K172959,"PeraHealth, Inc.",PeraServer and PeraTrend,Cardiovascular,MWI,2018-05-01,"","","","","","","",""
+K180432,"Shenzhen Carewell Electronics., Ltd.",AI-ECG Platform,Cardiovascular,DQK,2018-11-19,"","","","","","","",""
+K183370,"PeraHealth, Inc.",PeraMobile and PeraWatch,Cardiovascular,MWI,2019-09-11,"","","","","","","",""
+K183646,"Edwards Lifeciences, LLC","Acumen Hypotension Prediction Index - EV1000 Clinical Platform, Acumen Hypotension Prediction Index - Hemosphere Advanced Monitoring Platform, Acumen Hypotension Prediction Index, Hemosphere Advanced Monitoring Platform - Pressure",Cardiovascular,QAQ,2019-05-21,"","","","","","","",""
+K200036,"Shenzhen Carewell Electronics Co., Ltd.",AI-ECG Tracker,Cardiovascular,DPS,2020-03-20,"","","","","","","",""
+K200717,Clew Medical Ltd.,CLEWICU System (ClewICUserver and ClewICUnitor),Cardiovascular,QNL,2021-01-09,"","","","","","","",""

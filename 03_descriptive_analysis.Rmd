@@ -1,7 +1,7 @@
 ---
 title: Descriptive Analysis
 author: Gary Weissman
-date: September 24, 2021
+date: December 15, 2022
 output: html_document
 ---
 
@@ -186,7 +186,23 @@ man_rev_list <- list(c("K210484", "No"), # implantable ECG device
                        c("K142512", "No"), # Vital sign monitoring for ambulatory patients
                        c("K142918", "No"), # Subcutaneous insulin dose calculator
                        c("K081140", "Yes"), # vital sign monitoring and alarm suitable for inpatients
-                       c("K955841", "No")) # Sleep study monitoring device
+                       c("K955841", "No"), # Sleep study monitoring device
+                     c("DEN200030", "No"), # Device for trans-catheter Left Atrial appendage occlusion procedures 
+                     c("K152733", "No"), # Analyzing coronary arteries on CT imaging studies
+                     c("K161772", "No"), # Analyzing coronary arteries on CT imaging studies
+                     c("K182035", "No"), # Analyzing coronary arteries on CT imaging studies
+                     c("K202527", "No"), # Analysis of long-term monitoring cardiac devices
+                     c("K203329", "No"), # Analyzing coronary arteries on CT imaging studies
+                     c("K210543", "No"), # Analysis of long-term monitoring cardiac devices
+                     c("K210822", "No"), # Analysis of long-term. ambulatory monitoring cardiac devices
+                     c("K212516", "No"), # OTC, AppleWatch arrhythmia identification
+                     c("K212662", "No"), # Analysis of long-term. ambulatory monitoring cardiac devices
+                     c("K213357", "No"), # Verily "study watch" to monitor outpatient abnormal cardiac rhythms with small device
+                     c("K213409", "No"), # Verily  Zio "watch" to monitor outpatient abnormal cardiac rhythms with small device
+                     c("K213657", "No"), # Analyzing coronary arteries on CT imaging studies
+                     c("K213794", "No"), # Stethoscope murmur analysis
+                     c("K213971", "No"), # Apple Watch Afib detection
+                     c("K220766", "No")) # Stethoscope murmur analysis
 
 man_rev_dt <- data.table (submission_number = sapply(man_rev_list, `[[`, 1),
                           eligible = sapply(man_rev_list, `[[`, 2))
@@ -202,7 +218,7 @@ Now for each eligible device, record:
 5. Other features of the model related to transparency (inputs, labels, population, etc)?
 
 ```{r generatecsvtoreview}
-to_review_dt <- merge(man_rev_dt, dt,
+to_review_dt <- merge(man_rev_dt, dt, all.y = TRUE,
                       by.x = 'submission_number', by.y = "Submission Number")
 
 to_review_dt <- to_review_dt[eligible == 'Yes', .(submission_number, company = Company,
@@ -259,6 +275,6 @@ fig1_dt[, .N, by = .(panel = `Panel (Lead)`, fin_decis_moyr)][order(panel, fin_d
   scale_color_nejm(name = 'FDA review panel') +
   theme(legend.position = 'bottom')
 
-ggsave('fig1_temporal_trends.png')
+ggsave('exhibits/fig1_temporal_trends.png')
 
 ```

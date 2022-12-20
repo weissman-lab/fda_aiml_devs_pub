@@ -8,7 +8,3 @@ jupyter nbconvert --to notebook	--execute 02_scrape_approval_details.ipynb
 
 echo "Analyzing data and generating exhibits..."
 R -e "rmarkdown::render('03_descriptive_analysis.Rmd')"
-
-echo "Render manuscript..."
-R -e "rmarkdown::render('ms/fda_dev_ms.md')"
-

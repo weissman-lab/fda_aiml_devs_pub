@@ -7,11 +7,11 @@ This database was used in the following publication (please cite it if you use t
 Jessica T. Lee. Alexander T. Moffett, Genevieve P. Kanter, Gary E. Weissman. Analysis of a public database of predictive devices approved by the FDA for bedside clinical decision support in critical care. **Under review**.
 
 ```
-@article{lee_devices_2021,
+@article{lee_devices_2022,
 title = {Analysis of a public database of predictive devices approved by the FDA for bedside clinical decision support in critical care},
-author = {Lee, Jessica T. and Moffett, Alexander T. and Kanter, Genevieve P. and Weissman, Gary E.},
+author = {Lee, Jessica T. and Moffett, Alexander T. and Maliha, George M. and Kanter, Genevieve P. and Weissman, Gary E.},
 journal = {Under review},
-year = {2021}
+year = {2022}
 }
 ```
 
