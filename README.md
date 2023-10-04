@@ -4,19 +4,14 @@ This repo is dedicated to scraping, aggregating, and analyzing the database of a
 
 This database was used in the following publication (please cite it if you use this data):
 
-Jessica T. Lee. Alexander T. Moffett, Zahra Faraji, Genevieve P. Kanter, Gary E. Weissman. @article{lee_devices_2022,
-title = {Analysis of a public database of predictive devices approved by the FDA for bedside clinical decision support in critical care},
-author = {Lee, Jessica T. and Moffett, Alexander T. and Maliha, George M. and Faraji, Zahra and Kanter, Genevieve P. and Weissman, Gary E.},
-journal = {under review},
-year = {2023}
-}. **Under review**.
+Jessica T. Lee. Alexander T. Moffett, George Maliha, Zahra Faraji, Genevieve P. Kanter, Gary E. Weissman. Analysis of Devices Authorized by the FDA for Clinical Decision Support in Critical Care. 2023 **Under review**.
 
 ```
 @article{lee_devices_2022,
-title = {Analysis of a public database of predictive devices approved by the FDA for bedside clinical decision support in critical care},
-author = {Lee, Jessica T. and Moffett, Alexander T. and Maliha, George M. and Faraji, Zahra and Kanter, Genevieve P. and Weissman, Gary E.},
+title = {Analysis of Devices Authorized by the FDA for Clinical Decision Support in Critical Care},
+author = {Lee, Jessica T. and Moffett, Alexander T. and Maliha, George and Faraji, Zahra and Kanter, Genevieve P. and Weissman, Gary E.},
 journal = {Under review},
-year = {2022}
+year = {2023}
 }
 ```
 
