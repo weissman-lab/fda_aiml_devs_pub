@@ -4,13 +4,13 @@ This repo is dedicated to scraping, aggregating, and analyzing the database of a
 
 This database was used in the following publication (please cite it if you use this data):
 
-Jessica T. Lee. Alexander T. Moffett, George Maliha, Zahra Faraji, Genevieve P. Kanter, Gary E. Weissman. Analysis of Devices Authorized by the FDA for Clinical Decision Support in Critical Care. 2023 **Under review**.
+Jessica T. Lee. Alexander T. Moffett, George Maliha, Zahra Faraji, Genevieve P. Kanter, Gary E. Weissman. Analysis of Devices Authorized by the FDA for Clinical Decision Support in Critical Care. 2023 **JAMA Internal Medicine**.
 
 ```
 @article{lee_devices_2022,
 title = {Analysis of Devices Authorized by the FDA for Clinical Decision Support in Critical Care},
 author = {Lee, Jessica T. and Moffett, Alexander T. and Maliha, George and Faraji, Zahra and Kanter, Genevieve P. and Weissman, Gary E.},
-journal = {Under review},
+journal = {JAMA Internal Medicine},
 year = {2023}
 }
 ```
